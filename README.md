@@ -68,10 +68,6 @@ Desarrollado para la asignatura de **IA Generativa**
 Master en Inteligencia Artificial  
 Enfoque: E1 (Código Avanzado)
 
-## 📄 Licencia
-
-MIT License
-
 ## 👤 Autor
 
-María - [Tu GitHub/LinkedIn]
+María Pazos López
