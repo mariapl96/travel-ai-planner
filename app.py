@@ -29,7 +29,7 @@ st.set_page_config(
 
 
 # Inicializar sistema RAG (solo una vez)
-@st.cache_resource
+@st.cache_resource # Cachea (guarda en memoria) el resultado de la función para no repetir trabajo costoso.
 def initialize_rag():
     """
     Inicializa el sistema RAG (se ejecuta solo una vez)
@@ -54,6 +54,10 @@ def initialize_llm():
 def generate_itinerary(destination, days, budget, interests, restrictions, rag_system, llm):
     """
     Genera el itinerario completo usando RAG + LLM + Tool Use
+    Orquesta todo el proceso de generación del itinerario.
+
+    Se usa abajo, en main.
+
     
     Args:
         destination: Ciudad destino
