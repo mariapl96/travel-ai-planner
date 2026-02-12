@@ -1,4 +1,5 @@
 """
+App de Streamlit: Une todos los componentes y crea la interfaz web.
 Travel AI Planner - Aplicación Principal
 Planificador de viajes personalizado con IA, RAG y Tool Use
 """
@@ -68,12 +69,12 @@ def generate_itinerary(destination, days, budget, interests, restrictions, rag_s
     """
     
     # Paso 1: Obtener información del clima (Tool Use)
-    with st.spinner(f"🌤️ Consultando clima actual en {destination}..."):
+    with st.spinner(f"Consultando clima actual en {destination}..."):
         city_query = get_city_query(destination)
         weather_info = get_weather_info(city_query)
     
     # Paso 2: Buscar información del destino en RAG
-    with st.spinner(f"📚 Buscando información sobre {destination}..."):
+    with st.spinner(f"Buscando información sobre {destination}..."):
         context_info = rag_system.search_by_destination(destination)
     
     # Paso 3: Crear prompt con toda la información
@@ -88,7 +89,7 @@ def generate_itinerary(destination, days, budget, interests, restrictions, rag_s
     )
     
     # Paso 4: Generar itinerario con LLM
-    with st.spinner(f"✨ Generando tu itinerario personalizado..."):
+    with st.spinner(f"Generando tu itinerario personalizado..."):
         messages = [
             SystemMessage(content=SYSTEM_PROMPT),
             HumanMessage(content=user_prompt)

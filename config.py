@@ -7,11 +7,11 @@ import os
 from dotenv import load_dotenv
 
 # Cargar variables de entorno desde .env
-load_dotenv()
+load_dotenv() # Leemos archivo .env donde estan las keys
 
 # API Keys
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY") # Api del modelo
+OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY") # Api del tiempo: OpenWeather
 
 # Validar que las API keys existen
 if not GROQ_API_KEY:
@@ -38,7 +38,7 @@ RAG_CONFIG = {
 # Configuración de embeddings (para RAG)
 EMBEDDING_CONFIG = {
     "model_name": "sentence-transformers/all-MiniLM-L6-v2",  # Modelo para embeddings
-    "device": "cpu",  # Cambiar a "cuda" si tienes GPU
+    "device": "cpu",  # Cambiar a "cuda" si usamos GPU
 }
 
 # Destinos disponibles en la base de conocimiento
@@ -64,5 +64,3 @@ WEATHER_CONFIG = {
     "units": "metric",  # Celsius
     "lang": "es",  # Idioma español
 }
-
-print("✅ Configuración cargada correctamente")

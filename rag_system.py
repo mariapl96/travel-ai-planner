@@ -1,6 +1,7 @@
 """
 Sistema RAG (Retrieval Augmented Generation)
-Gestiona la base de conocimiento y búsqueda de información relevante
+Gestiona la base de conocimiento y búsqueda de información relevante en los documentos
+Recupera la información de mis documentos y se la da al LLM para que genere una respuesta con esa información
 """
 
 import os
@@ -35,14 +36,15 @@ class RAGSystem:
         
         # Cargar o crear vector store
         self.vector_store = None
-        self.load_or_create_vector_store()
+        self._load_or_create_vector_store()
         
         print("✅Sistema RAG inicializado correctamente")
     
     
-    def load_documents(self) -> List[Document]:
+    def _load_documents(self) -> List[Document]:
         """
-        Carga todos los documentos de la base de conocimiento
+        Carga todos los documentos de la base de conocimiento.
+        Se usa dentro de _load_or_create_vector_store(), que es otro método de la clase Rag.
         
         Returns:
             List[Document]: Lista de documentos cargados
@@ -76,14 +78,15 @@ class RAGSystem:
                 except Exception as e:
                     print(f"  ✗ Error cargando {filename}: {e}")
         
-        print(f"📄 Total documentos cargados: {len(documents)}")
+        print(f"Total documentos cargados: {len(documents)}")
         return documents
     
     
-    def split_documents(self, documents: List[Document]) -> List[Document]:
+    def _split_documents(self, documents: List[Document]) -> List[Document]:
         """
         Divide documentos en fragmentos más pequeños (chunks)
-        
+        Se usa dentro de _load_or_create_vector_store(), que es otro método de la clase Rag.
+
         Args:
             documents: Lista de documentos
             
@@ -103,16 +106,23 @@ class RAGSystem:
         return chunks
     
     
-    def create_vector_store(self, chunks: List[Document]):
+    def _create_vector_store(self, chunks: List[Document]):
         """
         Crea el vector store (base de datos vectorial) a partir de los chunks
-        
+        Convierte los chunks en embeddings y los guarda en FAISS.
+
+        1. Coge cada chunk de texto
+        2. Lo convierte en un vector (embedding) usando self.embeddings
+        3. Guarda el vector + texto original en la base de datos
+
+        Se usa dentro de _load_or_create_vector_store().
+
         Args:
             chunks: Lista de fragmentos de documentos
         """
         print("Creando vector store (puede tardar un poco)...")
         
-        self.vector_store = FAISS.from_documents(
+        self.vector_store = FAISS.from_documents( # FAISS es una libreria de Facebook que guarda vectores
             documents=chunks,
             embedding=self.embeddings
         )
@@ -120,16 +130,18 @@ class RAGSystem:
         print("✅Vector store creado correctamente")
     
     
-    def load_or_create_vector_store(self):
+    def _load_or_create_vector_store(self):
         """
         Carga vector store existente o crea uno nuevo
+
+        Se ejecuta dentro de __init__.
         """
         vector_store_path = "data/faiss_index"
         
         # Intentar cargar vector store existente
         if os.path.exists(vector_store_path):
             try:
-                print("📂 Cargando vector store existente...")
+                print("Cargando vector store existente...")
                 self.vector_store = FAISS.load_local(
                     vector_store_path, 
                     self.embeddings,
@@ -142,13 +154,13 @@ class RAGSystem:
                 print("Creando nuevo vector store...")
         
         # Si no existe o falla la carga, crear nuevo
-        documents = self.load_documents()
+        documents = self._load_documents()
         
         if not documents:
             raise ValueError("No se encontraron documentos en la base de conocimiento")
         
-        chunks = self.split_documents(documents)
-        self.create_vector_store(chunks)
+        chunks = self._split_documents(documents)
+        self._create_vector_store(chunks)
         
         # Guardar vector store para futuras ejecuciones
         try:
@@ -162,6 +174,7 @@ class RAGSystem:
     def search(self, query: str, k: int = None) -> str:
         """
         Busca información relevante en la base de conocimiento
+        Se usa en app.py
         
         Args:
             query: Consulta de búsqueda

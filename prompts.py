@@ -1,9 +1,14 @@
 """
 Templates de prompts para el sistema
-Aquí se define cómo se comporta el LLM
+Aquí se define cómo se comporta y como debe responder el LLM
+
+Aquí definimos:
+SYSTEM_PROMPT : Define rol y formato del agente
+create_user_prompt(): Construye prompt con datos del usuario
+
 """
 
-# SYSTEM PROMPT - Define el rol y comportamiento del asistente
+# SYSTEM PROMPT - Define el rol y comportamiento del asistente: la usamos en generate_itinerary() en app.py
 SYSTEM_PROMPT = """Eres un agente de viajes experto y entusiasta que ayuda a planificar itinerarios personalizados.
 
 TU ROL:
@@ -64,8 +69,15 @@ IMPORTANTE:
 # USER PROMPT TEMPLATE - Se completa con los datos del usuario
 def create_user_prompt(destination, days, budget, interests, restrictions, context_info, weather_info):
     """
-    Crea el prompt del usuario con toda la información necesaria
-    
+    Función que construye el prompt del usuario dinámicamente
+    Crea el prompt del usuario con toda la información necesaria, 
+    insertando:
+        - Variables del formulario (destino, días, presupuesto...)
+        - Clima actual (de tools.py)
+        - Contexto del RAG (de rag_system.py)
+
+    La usamos en app.py en generate_itinerary() --> user_prompt = create_user_prompt(..)
+
     Args:
         destination: Ciudad de destino
         days: Número de días del viaje
@@ -103,25 +115,3 @@ Por favor, genera un itinerario completo siguiendo el formato especificado. Aseg
 """
     
     return prompt
-
-
-# PROMPT PARA REFORMULAR CONSULTA (si es necesario)
-QUERY_REFORMULATION_PROMPT = """Dada la siguiente consulta de un usuario sobre viajes, reformúlala en una versión más clara y estructurada que pueda usarse para buscar información relevante.
-
-Consulta original: {query}
-
-Reformulación:"""
-
-
-# PROMPT PARA EXTRAER PREFERENCIAS (opcional, para análisis de texto libre)
-EXTRACT_PREFERENCES_PROMPT = """Analiza el siguiente texto del usuario y extrae:
-1. Destino deseado
-2. Duración aproximada
-3. Nivel de presupuesto (bajo/medio/alto)
-4. Intereses principales
-5. Restricciones o peticiones especiales
-
-Texto del usuario: {user_text}
-
-Responde en formato JSON.
-"""
